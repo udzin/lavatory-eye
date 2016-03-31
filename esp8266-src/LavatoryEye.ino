@@ -45,6 +45,7 @@ void setup() {
 	loadConfig();
 	if (String(settings.ssid) == String(PUBLIC_SSID)) {
 		Serial.println("WiFi public AP");
+		WiFi.mode(WIFI_AP);
 		WiFi.softAP(PUBLIC_SSID);
 		IPAddress myIP = WiFi.softAPIP();
 		Serial.print("AP IP address: ");
@@ -53,6 +54,7 @@ void setup() {
 	else {
 		Serial.print("WiFi connect: ");
 		Serial.println(settings.ssid);
+		WiFi.mode(WIFI_STA);
 		WiFi.begin(settings.ssid, settings.password);
 		while (WiFi.status() != WL_CONNECTED) {
 			delay(500);
@@ -67,6 +69,7 @@ void setup() {
 	httpWebServer.on("/", showHelpAndStatus);
 	httpWebServer.on("/setup", HTTP_POST, saveSettings);
 	httpWebServer.on("/state", showState);
+	httpWebServer.on("/status", showStatus);
 	httpWebServer.begin();
 
 	attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), stateChanged, CHANGE);
@@ -177,6 +180,7 @@ void showHelpAndStatus() {
 	helpContent += "<p>Lavatory is <b>" + state + "</b></p>";
 	helpContent += "<h1>Help</h1>";
 	helpContent += "<p><b>/</b> this help page</p>";
+	helpContent += "<p><b>/status</b> colorful state</p>";
 	helpContent += "<p><b>/setup?ssid=ssid&password=password</b> POST Method save settings</p>";
 	helpContent += "<p><b>/state</b> return json state {state:'vacant', open:true}</p>";
 	helpContent += "<h1>Reset</h1>";
@@ -185,6 +189,23 @@ void showHelpAndStatus() {
 	helpContent += "<p>Evgeny Galkin | u-gin@bk.ru | 2016</p>";
 	helpContent += "</body>";
 	helpContent += "</html>";
+
+	httpWebServer.send(200, "text/html", helpContent);
+}
+
+void showStatus() {
+	Serial.println("Show status");
+	String state = stateVacant ? "vacant" : "occupied";
+	String color = stateVacant ? "green" : "red";
+	String helpContent = "";
+
+	helpContent += "<html>";
+	helpContent += "<head>";
+	helpContent += "<meta http-equiv='refresh' content='10'>";
+	helpContent += "<title>Lavatory: " + state + "</title>";
+	helpContent += "</head>";
+	helpContent += "<body style='background-color:"+color+"'>";
+	helpContent += "<h1><b>" + state + "</b></p>";
 
 	httpWebServer.send(200, "text/html", helpContent);
 }
