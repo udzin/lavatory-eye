@@ -38,9 +38,10 @@ struct ServerSettings {
 void setup() {
 	wdt_disable();
 	Serial.begin(115200);
-
 	delay(1000);
 	Serial.println("Init");
+	attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), stateChanged, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(RESET_PIN), clearConfig, ONLOW);
 
 	loadConfig();
 	if (String(settings.ssid) == String(PUBLIC_SSID)) {
@@ -71,9 +72,6 @@ void setup() {
 	httpWebServer.on("/state", showState);
 	httpWebServer.on("/status", showStatus);
 	httpWebServer.begin();
-
-	attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), stateChanged, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(RESET_PIN), clearConfig, ONLOW);
 
 	wdt_enable(WDTO_8S);
 	Serial.println("Setup complete");
@@ -182,7 +180,7 @@ void showHelpAndStatus() {
 	helpContent += "<p><b>/</b> this help page</p>";
 	helpContent += "<p><b>/status</b> colorful state</p>";
 	helpContent += "<p><b>/setup?ssid=ssid&password=password</b> POST Method save settings</p>";
-	helpContent += "<p><b>/state</b> return json state {state:'vacant', open:true}</p>";
+	helpContent += "<p><b>/state</b> return json state {state:'vacant', open:1}</p>";
 	helpContent += "<h1>Reset</h1>";
 	helpContent += "<p>press reset button to clear settings</p>";
 	helpContent += "<h1>Author</h1>";
@@ -213,5 +211,5 @@ void showStatus() {
 void showState() {
 	Serial.println("Show state json");
 	String state = stateVacant ? "vacant" : "occupied";
-	httpWebServer.send(200, "application/json", "{state: '" + state + "', open: " + stateVacant + "}");
+	httpWebServer.send(200, "application/json", "{\"state\": \"" + state + "\", \"open\": " + stateVacant + "}");
 }
