@@ -7739,13 +7739,14 @@ Source: www.kingbright.com</description>
 <part name="IC1" library="lm1117" deviceset="LM1117T-*" device="-V" technology="3.3"/>
 <part name="LED1" library="led" deviceset="LED" device="3MM"/>
 <part name="SENSORSOCKET" library="pinhead" deviceset="PINHD-1X3" device=""/>
-<part name="R1" library="rcl" deviceset="R-EU_" device="0204/5" value="10k"/>
+<part name="R1" library="rcl" deviceset="R-EU_" device="0204/5" value="47k"/>
 <part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
 <part name="CLEARBUTTON" library="pinhead" deviceset="PINHD-1X3" device=""/>
 <part name="P+3" library="supply1" deviceset="+5V" device=""/>
+<part name="LED2" library="led" deviceset="LED" device="3MM"/>
 </parts>
 <sheets>
 <sheet>
@@ -7779,6 +7780,7 @@ Source: www.kingbright.com</description>
 <instance part="GND4" gate="1" x="101.6" y="-7.62"/>
 <instance part="CLEARBUTTON" gate="A" x="111.76" y="2.54"/>
 <instance part="P+3" gate="1" x="45.72" y="50.8"/>
+<instance part="LED2" gate="G$1" x="86.36" y="2.54"/>
 </instances>
 <busses>
 </busses>
@@ -7851,6 +7853,11 @@ Source: www.kingbright.com</description>
 <wire x1="101.6" y1="-5.08" x2="101.6" y2="0" width="0.1524" layer="91"/>
 <pinref part="CLEARBUTTON" gate="A" pin="3"/>
 <wire x1="101.6" y1="0" x2="109.22" y2="0" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="0" x2="96.52" y2="0" width="0.1524" layer="91"/>
+<wire x1="96.52" y1="0" x2="96.52" y2="-2.54" width="0.1524" layer="91"/>
+<pinref part="LED2" gate="G$1" pin="C"/>
+<wire x1="96.52" y1="-2.54" x2="86.36" y2="-2.54" width="0.1524" layer="91"/>
+<junction x="101.6" y="0"/>
 </segment>
 </net>
 <net name="+3V3" class="0">
@@ -7956,6 +7963,9 @@ Source: www.kingbright.com</description>
 <wire x1="109.22" y1="5.08" x2="101.6" y2="5.08" width="0.1524" layer="91"/>
 <wire x1="101.6" y1="5.08" x2="101.6" y2="12.7" width="0.1524" layer="91"/>
 <junction x="101.6" y="12.7"/>
+<pinref part="LED2" gate="G$1" pin="A"/>
+<wire x1="86.36" y1="5.08" x2="101.6" y2="5.08" width="0.1524" layer="91"/>
+<junction x="101.6" y="5.08"/>
 </segment>
 </net>
 </nets>
