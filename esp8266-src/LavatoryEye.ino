@@ -7,7 +7,8 @@
 #define CONFIG_VERSION "lv1"
 #define CONFIG_START 0
 #define SENSOR_PIN 0
-#define RESET_AND_LIGHT_SENSOR_PIN 2
+#define RESET_PIN 2
+#define LIGHT_SENSOR_PIN 1
 
 volatile bool stateVacant = true;
 volatile bool lightsOn = false;
@@ -41,14 +42,14 @@ struct ServerSettings {
  */
 void setup() {
 	wdt_disable();
-	Serial.begin(115200);
+	//Serial.begin(115200);
+	Serial.end();
 	delay(1000);
 	Serial.println("Init");
-	if (digitalRead(RESET_AND_LIGHT_SENSOR_PIN) == LOW) {
-		clearConfig();
-	}
+
 	attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), stateChanged, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(RESET_AND_LIGHT_SENSOR_PIN), lightsStateChanged, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(LIGHT_SENSOR_PIN), lightsStateChanged, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(RESET_PIN), clearConfig, ONLOW);
 
 	loadConfig();
 	if (String(settings.ssid) == String(PUBLIC_SSID)) {
@@ -90,7 +91,7 @@ void stateChanged() {
 }
 
 void lightsStateChanged() {
-	lightsOn = digitalRead(RESET_AND_LIGHT_SENSOR_PIN) == LOW;
+	lightsOn = digitalRead(LIGHT_SENSOR_PIN) == LOW;
 	Serial.println("Lights state changed: " + lightsOn);
 }
 
@@ -195,7 +196,7 @@ void showHelpAndStatus() {
 	helpContent += "<p><b>/setup?ssid=ssid&password=password</b> POST Method save settings</p>";
 	helpContent += "<p><b>/state</b> return json state {state:'vacant', open:1}</p>";
 	helpContent += "<h1>Reset</h1>";
-	helpContent += "<p>to clear settings keep reset button pressed when power on</p>";
+	helpContent += "<p>press reset button to clear settings</p>";
 	helpContent += "<h1>Author</h1>";
 	helpContent += "<p>Evgeny Galkin | u-gin@bk.ru | 2016</p>";
 	helpContent += "</body>";

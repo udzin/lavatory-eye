@@ -1519,6 +1519,7 @@ design rules under a new name.</description>
 <element name="R1" library="rcl" package="0204/5" value="47k" x="30.48" y="50.8" rot="R90"/>
 <element name="CLEARBUTTON" library="pinhead" package="1X03" value="" x="43.18" y="58.42"/>
 <element name="LED2" library="led" package="LED3MM" value="" x="58.42" y="59.69" rot="R90"/>
+<element name="R5" library="rcl" package="0204/5" value="47k" x="27.94" y="71.12"/>
 </elements>
 <signals>
 <signal name="+5V">
@@ -1562,7 +1563,7 @@ design rules under a new name.</description>
 <wire x1="27.94" y1="53.34" x2="22.86" y2="53.34" width="0.4064" layer="16"/>
 <wire x1="22.86" y1="53.34" x2="22.86" y2="58.42" width="0.4064" layer="16"/>
 <contactref element="LED2" pad="K"/>
-<wire x1="58.42" y1="60.96" x2="45.72" y2="60.96" width="0.4064" layer="16"/>
+<wire x1="45.72" y1="60.96" x2="58.42" y2="60.96" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="+3V3">
 <contactref element="C3" pad="1"/>
@@ -1580,7 +1581,9 @@ design rules under a new name.</description>
 <wire x1="25.4" y1="63.5" x2="25.415" y2="63.515" width="0.4064" layer="16"/>
 <wire x1="25.415" y1="63.515" x2="33.0975" y2="63.515" width="0.4064" layer="16"/>
 <wire x1="33.02" y1="48.26" x2="27.94" y2="48.26" width="0.4064" layer="16"/>
+<contactref element="R5" pad="1"/>
 <wire x1="33.02" y1="48.26" x2="33.0975" y2="63.515" width="0" layer="19" extent="1-1"/>
+<wire x1="25.4" y1="68.58" x2="25.4" y2="71.12" width="0.4064" layer="16"/>
 </signal>
 <signal name="CHPD">
 <contactref element="R4" pad="2"/>
@@ -1616,8 +1619,6 @@ design rules under a new name.</description>
 <wire x1="40.64" y1="58.42" x2="40.64" y2="68.58" width="0.4064" layer="16"/>
 <wire x1="40.64" y1="68.58" x2="40.625" y2="68.595" width="0.4064" layer="16"/>
 <wire x1="40.625" y1="68.595" x2="35.6375" y2="68.595" width="0.4064" layer="16"/>
-<contactref element="LED2" pad="A"/>
-<wire x1="40.64" y1="58.42" x2="58.42" y2="58.42" width="0" layer="19" extent="1-1"/>
 <wire x1="30.48" y1="53.34" x2="40.64" y2="53.34" width="0.4064" layer="16"/>
 <wire x1="40.64" y1="53.34" x2="40.64" y2="58.42" width="0.4064" layer="16"/>
 </signal>
@@ -1630,6 +1631,23 @@ design rules under a new name.</description>
 </signal>
 <signal name="N$5">
 <via x="27.94" y="48.26" extent="1-16" drill="0.6" shape="square"/>
+</signal>
+<signal name="LIGHTS">
+<contactref element="RADIO" pad="TX"/>
+<contactref element="R5" pad="2"/>
+<contactref element="LED2" pad="A"/>
+<wire x1="30.48" y1="71.12" x2="33.0975" y2="71.12" width="0.4064" layer="16"/>
+<wire x1="33.0975" y1="71.12" x2="33.0975" y2="71.135" width="0.4064" layer="16"/>
+<wire x1="33.0975" y1="71.135" x2="33.02" y2="71.135" width="0.4064" layer="16"/>
+<wire x1="33.02" y1="71.135" x2="33.02" y2="73.66" width="0.4064" layer="16"/>
+<wire x1="58.42" y1="58.42" x2="55.88" y2="58.42" width="0.4064" layer="16"/>
+<wire x1="33.0975" y1="71.12" x2="55.88" y2="58.42" width="0" layer="19" extent="16-16"/>
+</signal>
+<signal name="N$6">
+<via x="33.02" y="73.66" extent="1-16" drill="0.6" shape="square"/>
+</signal>
+<signal name="N$7">
+<via x="55.88" y="58.42" extent="1-16" drill="0.6" shape="square"/>
 </signal>
 </signals>
 </board>
