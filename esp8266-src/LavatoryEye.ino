@@ -4,7 +4,7 @@
 //#include <WiFiUdp.h>
 
 #define PUBLIC_SSID "LavatoryEye"
-#define CONFIG_VERSION "lv1"
+#define CONFIG_VERSION "lv2"
 #define CONFIG_START 0
 #define SENSOR_PIN 0
 #define RESET_PIN 2
@@ -18,16 +18,20 @@ ESP8266WebServer httpWebServer(80);
 struct ServerSettings {
 	char ssid[25];
 	char password[25];
+	bool useDhcp;
+	IPAddress localIP;
+	IPAddress gatewayIP;
+	IPAddress subnetIP;
 	char version[4];
 } settings = {
 	PUBLIC_SSID,
 	"",
-	//false,
-	//(127,0,0,1),
-	//999,
+	true,
+	(192,168,1,100),
+	(192,168,1,1),
+	(255,255,255,0),
 	CONFIG_VERSION
 };
-
 
 /**
  * Алгоритм работы
@@ -37,8 +41,8 @@ struct ServerSettings {
  * 3) проверяем в eeprom наличие настроек, если есть, то подключаемся к wifi и начинаем слушать данные с датчика
  * 3) если настроек нет, то создаем открытую точку доступа LavatoryEye и ждем настройки
  * 4) на порту 80 всегда сидит сервис отображающий справку по настройке и текущий статус с датчика
- * 5) настройка происходит методом post с указанной строкой в url: http://ip/setup?ssid=ssid&password=password
-  TODO: сброс только при включении, детектор света, запись настроек только на паблике
+ * 5) настройка происходит методом post с указанной строкой в url: http:/ip//setup?ssid=ssid&password=password&useDhcp=true&localIP=192.168.1.100&gatewayIP=192.168.1.1&subnetIP=255.255.255.0
+ * 6) запись настроек только на паблике
  */
 void setup() {
 	wdt_disable();
@@ -50,8 +54,8 @@ void setup() {
 	attachInterrupt(digitalPinToInterrupt(SENSOR_PIN), stateChanged, CHANGE);
 	attachInterrupt(digitalPinToInterrupt(LIGHT_SENSOR_PIN), lightsStateChanged, CHANGE);
 	attachInterrupt(digitalPinToInterrupt(RESET_PIN), clearConfig, ONLOW);
-
 	loadConfig();
+	Serial.println(settings.ssid);
 	if (String(settings.ssid) == String(PUBLIC_SSID)) {
 		Serial.println("WiFi public AP");
 		WiFi.mode(WIFI_AP);
@@ -68,8 +72,13 @@ void setup() {
 		WiFi.begin(settings.ssid, settings.password);
 		while (WiFi.status() != WL_CONNECTED) {
 			delay(500);
+			Serial.print(".");
+			wdt_reset();
 		}
 		Serial.println("WiFi connected");
+		if (!settings.useDhcp) {
+			WiFi.config(settings.localIP, settings.gatewayIP, settings.subnetIP);
+		}
 		IPAddress myIP = WiFi.localIP();
 		Serial.print("AP IP address: ");
 		Serial.println(myIP);
@@ -156,11 +165,26 @@ void saveSettings() {
 		if (httpWebServer.argName(i) == "ssid") {
 			Serial.println(httpWebServer.arg(i));
 			httpWebServer.arg(i).toCharArray(settings.ssid, sizeof(settings.ssid), 0);
-
 		}
 		if (httpWebServer.argName(i) == "password") {
 			Serial.println(httpWebServer.arg(i));
 			httpWebServer.arg(i).toCharArray(settings.password, sizeof(settings.password), 0);
+		}
+		if (httpWebServer.argName(i) == "useDhcp") {
+			Serial.println(httpWebServer.arg(i));
+			settings.useDhcp = httpWebServer.arg(i) == "true";
+		}
+		if (httpWebServer.argName(i) == "localIP") {
+			Serial.println(httpWebServer.arg(i));
+			settings.localIP.fromString(httpWebServer.arg(i));
+		}
+		if (httpWebServer.argName(i) == "gatewayIP") {
+			Serial.println(httpWebServer.arg(i));
+			settings.gatewayIP.fromString(httpWebServer.arg(i));
+		}
+		if (httpWebServer.argName(i) == "subnetIP") {
+			Serial.println(httpWebServer.arg(i));
+			settings.subnetIP.fromString(httpWebServer.arg(i));
 		}
 	}
 
@@ -193,7 +217,7 @@ void showHelpAndStatus() {
 	helpContent += "<h1>Help</h1>";
 	helpContent += "<p><b>/</b> this help page</p>";
 	helpContent += "<p><b>/status</b> colorful state</p>";
-	helpContent += "<p><b>/setup?ssid=ssid&password=password</b> POST Method save settings</p>";
+	helpContent += "<p><b>/setup?ssid=ssid&password=password&useDhcp=true&localIP=192.168.1.100&gatewayIP=192.168.1.1&subnetIP=255.255.255.0</b> POST Method save settings</p>";
 	helpContent += "<p><b>/state</b> return json state {state:'vacant', open:1}</p>";
 	helpContent += "<h1>Reset</h1>";
 	helpContent += "<p>press reset button to clear settings</p>";
