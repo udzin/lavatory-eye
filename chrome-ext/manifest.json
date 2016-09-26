@@ -1,0 +1,16 @@
+﻿{
+  "name": "Lavatory Eye",
+  "version": "1.4",
+  "manifest_version": 2,
+  "description": "Отображает занятость комнаты отдыха",
+  "icons": { "128": "logo.png" },
+  "background": {
+    "persistent": false,
+    "scripts": ["bg.js"]
+  },
+  "permissions": ["alarms", "http://le.ap.int/", "storage", "notifications"],
+  "browser_action": {
+    "default_title": "",
+    "default_icon": "logo.png"
+  }
+}
