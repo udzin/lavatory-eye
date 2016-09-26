@@ -30,7 +30,11 @@ function updateIcon(state) {
             stateChanged = new Date().getTime();
 
             if(state == State.VACANT && showNotify){
-                showVacantMessage();
+                chrome.storage.local.get({ enableNotifications: true }, function(items) {
+                    if (items.enableNotifications) {
+                        showVacantMessage();
+                    }
+                });
                 showNotify = false;
             }
 
